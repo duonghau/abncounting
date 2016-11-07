@@ -3,21 +3,23 @@
 #include <string>
 class AlignmentRecord{
 private:
-    string qname;
-    string rname;
+    std::string qname;
+    std::string rname;
     int flag;
     int pos;
     int mapq;    
-    string cigar;
-    string rnext;
+    std::string cigar;
+    std::string rnext;
     int pnext;
     int tlen;
-    string seq;
-    string qual;
-    string optional;
+    std::string seq;
+    std::string qual;
+    std::string optional;
+    int rpair;//pair read 1 or 2
 public:
-    AlignmentRecord(string line,int rpair);
+    AlignmentRecord(std::string alignment_record,int rpair);
     int start(void);
     int end(void);
+    int mapped_length(void);
 };
 #endif
