@@ -7,3 +7,5 @@ AlignmentRecord.o: AlignmentRecord.cpp
 	g++ -c AlignmentRecord.cpp
 SamParser.o:SamParser.cpp
 	g++ -c SamParser.cpp
+Clean:
+	rm Main.o AlignmentRecord.o SamParser.o
