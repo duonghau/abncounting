@@ -6,6 +6,7 @@
 #include <fstream>
 #include <exception>
 #include "AlignmentRecord.h"
+
 class SamParser
 {
 public:

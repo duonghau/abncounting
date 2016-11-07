@@ -4,7 +4,7 @@ SamParser::SamParser(){
 
 }
 std::map<std::string,AlignmentRecord> SamParser::parser(std::string read1_mapped, std::string read2_mapped){
-	std::map<std::string,AlignmentRecord> records;
+	map<string,AlignmentRecord> records;
 	ifstream file_handle1, file_handle2;
 	try{
 		file_handle1.open(read1_mapped.c_str());
@@ -16,16 +16,29 @@ std::map<std::string,AlignmentRecord> SamParser::parser(std::string read1_mapped
 		//read file 1
 		string line;
 		while(getline(file_handle1,line)){
-			if(line[0]=='@'){
-				continue; //check if line is header
+			//check if line is header or empty
+			if(line[0]=='@' or line==""){
+				continue;
 			}else{
-				
-				AlignmentRecord record = AlignmentRecord(line,1);
-				records[]=record;
+				size_t found=line.find('\t');
+				string rname=line.substr(0,found);
+				AlignmentRecord record = AlignmentRecord(line.c_str(),1);
+				records[rname]=record;
+			}
+		}
+		while(getline(file_handle2,line)){
+			//check if line is header or empty
+			if(line[0]=='@' or line==""){
+				continue;
+			}else{
+				size_t found=line.find('\t');
+				string rname=line.substr(0,found);
+				AlignmentRecord record = AlignmentRecord(line,2);
+				records[rname]=record;
 			}
 		}
 	}else{
-		throw;
+		throw "Can't not open file sam";
 	}
 	file_handle1.close();
 	file_handle2.close();

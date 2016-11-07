@@ -29,7 +29,7 @@ parser(string filename): read SAM file and return a hasmap of AlignmentRecord
 -tlen: observed Template LENgth
 -seq: segment SEQuence
 -qual: ASCII of Phred-scaled base QUALity+33
--optional: obtional fields
+-XM, MN: obtional fields
 **Functions**
 -void AlignmentRecord(string alignment_record): Constructor
 -int start(void): return start mapped position
