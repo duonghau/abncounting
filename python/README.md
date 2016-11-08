@@ -11,12 +11,16 @@ This is a program pre-process for abundance counting step. This programe aim to 
 
 ## How to run:
 
-``` python samprocess.py [-h] [-sam samfile] [-f final file] [-l len file] [-i identity] [-m minlen]
+```
+python samprocess.py [-h] [-sam samfile] [-f final file] [-l len file] [-i identity] [-m minlen]
+
 ```
 
 Example:
 
-``` python samprocess.py -sam MH0009.sam -f MH0009.final -l MH0009.len -i 0.9 -m 35
+``` 
+python samprocess.py -sam MH0009.sam -f MH0009.final -l MH0009.len -i 0.9 -m 35
+
 ```
 ## Algorithm
 ### Filter reads
