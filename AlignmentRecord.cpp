@@ -3,7 +3,8 @@ using namespace std;
 AlignmentRecord::AlignmentRecord(){
 
 }
-AlignmentRecord::AlignmentRecord(string alignment_record,int rpair){
+
+AlignmentRecord::AlignmentRecord(string alignment_record,int strand){
 	std::vector<string> tokens=record_parser(alignment_record);
 	this->qname=tokens[0];
 	this->flag=str2int(tokens[1]);
@@ -18,8 +19,7 @@ AlignmentRecord::AlignmentRecord(string alignment_record,int rpair){
 	this->qual=tokens[10];	
 	this->XM=tokens[13];
 	this->MN=tokens[16];
-	this->rpair=rpair;
-	cout<<this->cigar<<" "<<this->seq<<"\n";
+	this->strand=rpair;
 }
 int AlignmentRecord::str2int (string str) {
   stringstream ss(str);
@@ -32,7 +32,17 @@ string AlignmentRecord::to_string(void){
 	stringstream ss;
 	ss<<this->qname<<"\t";
 	ss<<this->flag<<"\t";
-	ss<<this->rname;
+	ss<<this->rname<<"\t";
+    ss<<this->pos<<"\t";
+    ss<<this->mapq<<"\t";
+    ss<<this->cigar<<"\t";
+    ss<<this->rnext<<"\t";
+    ss<<this->pnext<<"\t";
+    ss<<this->tlen<<"\t";
+    ss<<this->seq<<"\t";
+    ss<<this->qual<<"\t";
+    ss<<this->XM<<"\t";
+    ss<<this->MN<<"\t";
 	return ss.str();
 }
 vector<string> AlignmentRecord::record_parser(string record){

@@ -1,0 +1,52 @@
+Min ident:0.9
+Min len:35
+pos: 6050, cigar: 2S73M, start:6050, end:6123
+Read length:75
+Alignment length:73
+Identity:0.973333333333
+Is valid:True
+pos: 5969, cigar: 75M, start:5969, end:6044
+Read length:75
+Alignment length:75
+Identity:1.0
+Is valid:True
+pos: 1312, cigar: 14S45M16S, start:1312, end:1357
+Read length:75
+Alignment length:45
+Identity:0.6
+Is valid:False
+pos: 13224, cigar: 17S44M14S, start:13224, end:13268
+Read length:75
+Alignment length:44
+Identity:0.586666666667
+Is valid:False
+pos: 1101, cigar: 14S35M26S, start:1101, end:1136
+Read length:75
+Alignment length:35
+Identity:0.466666666667
+Is valid:False
+pos: 20724, cigar: 13S46M16S, start:20724, end:20770
+Read length:75
+Alignment length:46
+Identity:0.613333333333
+Is valid:False
+pos: 908, cigar: 15S24M36S, start:908, end:932
+Read length:75
+Alignment length:24
+Identity:0.32
+Is valid:False
+pos: 1, cigar: 75M, start:1, end:76
+Read length:75
+Alignment length:75
+Identity:1.0
+Is valid:True
+pos: 1, cigar: 43M32S, start:1, end:44
+Read length:75
+Alignment length:43
+Identity:0.573333333333
+Is valid:False
+pos: 8879, cigar: 75M, start:8879, end:8954
+Read length:75
+Alignment length:75
+Identity:1.0
+Is valid:True

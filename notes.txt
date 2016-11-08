@@ -1,0 +1,60 @@
+Fields 9 is fragment size, not insert size
+https://www.biostars.org/p/65262/
+
+Examples:
+Read_ID chr1    Start   End Mapped_Length   CIGAR_String
+BMW-S105R:17:H02AWADXX:2:1109:4198:22439    chr1    564455  564503  48  6M1I43M
+BMW-S105R:17:H02AWADXX:2:1109:4309:28023    chr1    564682  564732  50  5M1D45M
+BMW-S105R:17:H02AWADXX:2:1109:15415:28127   chr1    564689  564737  48  37M1I12M
+
+
+Compute end position in perl:
+
+int BamAlignment::GetEndPosition(bool usePadded, bool closedInterval) const {
+
+    // initialize alignment end to starting position
+    int alignEnd = Position;
+
+    // iterate over cigar operations
+    vector<CigarOp>::const_iterator cigarIter = CigarData.begin();
+    vector<CigarOp>::const_iterator cigarEnd  = CigarData.end();
+    for ( ; cigarIter != cigarEnd; ++cigarIter) {
+        const CigarOp& op = (*cigarIter);
+
+        switch ( op.Type ) {
+
+            // increase end position on CIGAR chars [DMXN=]
+            case Constants::BAM_CIGAR_DEL_CHAR      :
+            case Constants::BAM_CIGAR_MATCH_CHAR    :
+            case Constants::BAM_CIGAR_MISMATCH_CHAR :
+            case Constants::BAM_CIGAR_REFSKIP_CHAR  :
+            case Constants::BAM_CIGAR_SEQMATCH_CHAR :
+                alignEnd += op.Length;
+                break;
+
+            // increase end position on insertion, only if @usePadded is true
+            case Constants::BAM_CIGAR_INS_CHAR :
+                if ( usePadded )
+                    alignEnd += op.Length;
+                break;
+
+            // all other CIGAR chars do not affect end position
+            default :
+                break;
+        }
+    }
+
+    // adjust for closedInterval, if requested
+    if ( closedInterval )
+        alignEnd -= 1;
+
+    // return result
+    return alignEnd;
+}
+
+
+
+Delete(D)
+read       ACGTACGT--ACGTACGT
+reference  ACGTACGTAAACGTACGT
+

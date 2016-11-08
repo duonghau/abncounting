@@ -1,0 +1,72 @@
+Min ident:0.9
+Min len:35
+----------------------------------------------
+pos: 6050, cigar: 2S73M, start:6050, end:6123
+Alignment length M:73
+MD:3A2A0G0A3C2C28A28
+Mismath(edit) XM:7
+Identity:0.904109589041
+Is valid:True
+----------------------------------------------
+pos: 5969, cigar: 75M, start:5969, end:6044
+Alignment length M:75
+MD:17G7C49
+Mismath(edit) XM:2
+Identity:0.973333333333
+Is valid:True
+----------------------------------------------
+pos: 1312, cigar: 14S45M16S, start:1312, end:1357
+Alignment length M:45
+MD:37G7
+Mismath(edit) XM:1
+Identity:0.977777777778
+Is valid:True
+----------------------------------------------
+pos: 13224, cigar: 17S44M14S, start:13224, end:13268
+Alignment length M:44
+MD:20A23
+Mismath(edit) XM:1
+Identity:0.977272727273
+Is valid:True
+----------------------------------------------
+pos: 1101, cigar: 14S35M26S, start:1101, end:1136
+Alignment length M:35
+MD:35
+Mismath(edit) XM:0
+Identity:1.0
+Is valid:True
+----------------------------------------------
+pos: 20724, cigar: 13S46M16S, start:20724, end:20770
+Alignment length M:46
+MD:1A20G3A1C4G1T1C8
+Mismath(edit) XM:7
+Identity:0.847826086957
+Is valid:False
+----------------------------------------------
+pos: 908, cigar: 15S24M36S, start:908, end:932
+Alignment length M:24
+MD:20G3
+Mismath(edit) XM:1
+Identity:0.958333333333
+Is valid:False
+----------------------------------------------
+pos: 1, cigar: 75M, start:1, end:76
+Alignment length M:75
+MD:35A13T0G24
+Mismath(edit) XM:3
+Identity:0.96
+Is valid:True
+----------------------------------------------
+pos: 1, cigar: 43M32S, start:1, end:44
+Alignment length M:43
+MD:35A7
+Mismath(edit) XM:1
+Identity:0.976744186047
+Is valid:True
+----------------------------------------------
+pos: 8879, cigar: 75M, start:8879, end:8954
+Alignment length M:75
+MD:60A14
+Mismath(edit) XM:1
+Identity:0.986666666667
+Is valid:True

@@ -19,12 +19,12 @@ private:
     std::string seq;
     std::string qual;
     std::string MN,XM;
-    int rpair;//pair read 1 or 2
+    int strand;//pair read 1 or 2
     std::vector<std::string> record_parser(std::string record);
     int str2int(std::string str);
 public:
     AlignmentRecord();
-    AlignmentRecord(std::string alignment_record,int rpair);
+    AlignmentRecord(std::string alignment_record,int strand);
     int start(void);
     int end(void);
     int mapped_length(void);
