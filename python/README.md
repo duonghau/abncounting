@@ -1,4 +1,4 @@
-This is a program pre-process for abundance counting step. This programe aim to filter reads valid (by length, identity...), then prepaire data for abundance counting.
+This is a program pre-process for abundance counting step which aim to filter reads valid (by length, identity...), then prepaire data for abundance counting.
 
 ## Require:
 
@@ -22,8 +22,8 @@ python samprocess.py -sam MH0009.sam -f MH0009.final -l MH0009.len -i 0.9 -m 35
 1. Filter unmapped reads
 2. Filter reads by length and identity
 3. Ajusment:  
-⋅⋅* If a read mapped multiple time on to a scaffold, remove it if their positions are close together(< read_length)  
-⋅⋅* If foward sequence and reverse sequence are overlap in a scaffold, ajust their position
+ 3. If a read mapped multiple time on to a scaffold, remove it if their positions are close together(< read_length)  
+ 3. If foward sequence and reverse sequence are overlap in a scaffold, ajust their position
 
 ### Filter reads
 
