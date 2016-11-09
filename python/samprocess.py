@@ -19,10 +19,15 @@ class AlignRecords(object):
             self.rname=alignment_record.reference_name
             self.start=alignment_record.reference_start
             self.end=alignment_record.reference_end
+            if self.start > self.end:
+                self.start,self.end= self.end, self.start
             self.strand=1 if alignment_record.is_read1 else 2
 
     def get_length(self):
-        return abs(self.end-self.start)
+        return self.end-self.start
+
+    def is_valid(self, minlen):
+        return True if (self.start < self.end) and (self.end-self.start>minlen) else False
     # qname_strand rname start end
     def __str__(self):
         return "{0}_{1} {2} {3} {4}".format(self.qname, self.strand, self.rname,
@@ -48,9 +53,12 @@ def is_valid_alignment(alignment_record, minlen, identity):
 # Filter alignment record if they are unmapped, low identity or too short.
 def filter_alignment(samfile, minlen, identity):
     records=dict()
-    i=0
-    for record in samfile.fetch():
+    i=0 #count number of record
+    lengths=0
+    # for record in samfile.fetch():
+    for record in samfile.head(100000):
         i+=1
+        lengths+=record.infer_query_length()
         # remove if unmapped
         if record.is_unmapped:
             continue
@@ -64,8 +72,8 @@ def filter_alignment(samfile, minlen, identity):
             if rname not in records[qname]:
                 records[qname][rname]=list()
             records[qname][rname].append(valid_record)
-    print(i)
-    return records
+    mean_length=int(lengths/i)
+    return records, mean_length
 
 def ajust_record(record1, record2, read_length, minlen):
     # check if one read mapped multiple time to a scaffold
@@ -80,23 +88,36 @@ def ajust_record(record1, record2, read_length, minlen):
                 record2=None
     # check if read pairs are overlap
     else:
-        # read1 is in the left of read 2
-        if (record1.end - record2.start)>=0 and (record2.end - record1.start)>=0:
-            record2.start=record1.end+1
-            # check length
-            if record2.get_length < minlen:
-                record2=None
-        # read1 is in the right of read 2
-        elif (record2.end - record1.start)>=0 and (record1.end - record2.start)>=0:
-            record2.end=record1.start-1
-            if record2.get_length < minlen:
-                record2=None
-        # read 2 is in read 1
+        # record1 is in the left of record2
+        if (record1.end - record2.start)>=0 and (record2.end - record1.start)>=0 and record2.start> record1.start:
+            # determine which record is read_1
+            if record1.strand==1:
+                record2.start=record1.end+1
+            else:
+                record2.end=record1.start-1
+
+        # record1 is in the right of record2
+        elif (record2.end - record1.start)>=0 and (record1.end - record2.start)>=0 and record1.start>record2.start:
+            if record1.strand==1:
+                record2.end=record1.start-1
+            else:
+                record2.start=record1.end+1
+        # record2 is in record1
         elif (record2.start - record1.start)>=0 and (record2.end - record1.end)<=0:
             record2=None
-        # read 1 in read 2
+        # record1 in record2
         elif (record1.start-record2.start)>=0 and (record1.end - record2.end)<=0:
+            print("before")
+            print(record1)
+            print(record2)
             record1=None
+    # remove record if mapped length < minlen, start>end
+    if record1 is not None:
+        if not record1.is_valid(minlen):
+            record1=None
+    if record2 is not None:
+        if not record2.is_valid(minlen):
+            record2=None
     return (record1, record2)
 
 def ajust_records(records, scaffolds, read_length, minlen):
@@ -158,10 +179,11 @@ def main(sam_path, final_path, len_path, minlen, ident):
     # read samfile
     samfile=pysam.AlignmentFile(sam_path,"r")
     scaffolds=get_scaffolds_length(samfile)
-    records=filter_alignment(samfile, minlen, ident)
+    records, mean_readlength=filter_alignment(samfile, minlen, ident)
     samfile.close()
-    records=ajust_records(records,scaffolds,75, minlen)
+    records=ajust_records(records,scaffolds,mean_readlength, minlen)
     write_final_file(records, final_path)
+    write_length_file(scaffolds, len_path)
     print("done")
 if __name__=="__main__":
     if len(sys.argv)==1:
