@@ -42,7 +42,7 @@ pos: 6050, cigar: 2S73M
 Alignment length M:73
 MD:3A2A0G0A3C2C28A28
 Mismath(edit) XM:7
-Identity:0.904109589041
+Identity: (73-7)/73= 0.904109589041
 ```
 
 ### Ajustment
