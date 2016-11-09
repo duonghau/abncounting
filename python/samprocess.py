@@ -15,16 +15,19 @@ class AlignRecords(object):
 
     def __init__(self, alignment_record=None):
         if alignment_record is not None:
-            this.qname=alignment_record.query_name
-            this.rname=alignment_record.reference_id
-            this.start=alignment_record.reference_start
-            this.end=alignment_record.reference_end
-            this.strand=1 if alignment_record.is_read1 else 2
+            self.qname=alignment_record.query_name
+            self.rname=alignment_record.reference_name
+            self.start=alignment_record.reference_start
+            self.end=alignment_record.reference_end
+            self.strand=1 if alignment_record.is_read1 else 2
 
+    def get_length(self):
+        return abs(self.end-self.start)
     # qname_strand rname start end
     def __str__(self):
         return "{0}_{1} {2} {3} {4}".format(self.qname, self.strand, self.rname,
             self.start,self.end)
+
 def get_scaffolds_length(samfile):
     scaffolds=dict()
     for scaffold in samfile.header["SQ"]:
@@ -32,16 +35,9 @@ def get_scaffolds_length(samfile):
     return scaffolds
 
 def is_valid_alignment(alignment_record, minlen, identity):
-    # print("----------------------------------------------")
-    # print("pos: {0}, cigar: {1}, start:{2}, end:{3}".format(alignment_record.pos, alignment_record.cigarstring, alignment_record.reference_start, alignment_record.reference_end))
-    # print("Alignment length M:{0}".format(alignment_record.reference_length))
-    # print("MD:{0}".format(alignment_record.get_tag("MD")))
-    # print("Mismath(edit) XM:{0}".format(alignment_record.get_tag("XM")))
-    # identity=match/(match+mismatch)=(M-XM)/M
     M=alignment_record.reference_length
     mismatch=alignment_record.get_tag("XM")
     ident = (M-mismatch)/M
-    # print("Identity:{0}".format(ident))
     # alignment_record.reference_length = mapped length
     if alignment_record.reference_length < minlen:
         return False
@@ -51,10 +47,84 @@ def is_valid_alignment(alignment_record, minlen, identity):
 
 # Filter alignment record if they are unmapped, low identity or too short.
 def filter_alignment(samfile, minlen, identity):
-    for record in samfile.head(10):
-        print("Is valid:{0}".format(is_valid_alignment(record,minlen,identity)))
     records=dict()
+    i=0
+    for record in samfile.fetch():
+        i+=1
+        # remove if unmapped
+        if record.is_unmapped:
+            continue
+        # check if alignment is valid
+        if is_valid_alignment(record, minlen, identity):
+            valid_record=AlignRecords(record)
+            qname=record.query_name #query name
+            rname=record.reference_name #reference name
+            if qname not in records:
+                records[qname]=dict()
+            if rname not in records[qname]:
+                records[qname][rname]=list()
+            records[qname][rname].append(valid_record)
+    print(i)
+    return records
 
+def ajust_record(record1, record2, read_length, minlen):
+    # check if one read mapped multiple time to a scaffold
+    if record1.strand==record2.strand:
+        # check distance between 2 reads
+        distance=min(abs(record2.start-record1.end),abs(record1.start-record2.end))
+        # if two reads is close, keep the longer.
+        if distance < read_length:
+            if record1.get_length() < record2.get_length():
+                record1=None
+            else:
+                record2=None
+    # check if read pairs are overlap
+    else:
+        # read1 is in the left of read 2
+        if (record1.end - record2.start)>=0 and (record2.end - record1.start)>=0:
+            record2.start=record1.end+1
+            # check length
+            if record2.get_length < minlen:
+                record2=None
+        # read1 is in the right of read 2
+        elif (record2.end - record1.start)>=0 and (record1.end - record2.start)>=0:
+            record2.end=record1.start-1
+            if record2.get_length < minlen:
+                record2=None
+        # read 2 is in read 1
+        elif (record2.start - record1.start)>=0 and (record2.end - record1.end)<=0:
+            record2=None
+        # read 1 in read 2
+        elif (record1.start-record2.start)>=0 and (record1.end - record2.end)<=0:
+            record1=None
+    return (record1, record2)
+
+def ajust_records(records, scaffolds, read_length, minlen):
+    for readid in records:
+        for scaffold in records[readid]:
+            # if there are only one record in a group, do nothing
+            # else ajust position
+            if len(records[readid][scaffold])<=1:
+                continue
+            else:
+                for record1 in records[readid][scaffold]:
+                    for record2 in records[readid][scaffold]:
+                        if record1==record2:
+                            continue
+                        if (record1 not in records[readid][scaffold]) or (record2 not in records[readid][scaffold]):
+                            continue
+                        index1=records[readid][scaffold].index(record1)
+                        index2=records[readid][scaffold].index(record2)
+                        records_tmp=ajust_record(record1, record2, read_length, minlen)
+                        if records_tmp[0] is not None:
+                            records[readid][scaffold][index1]=records_tmp[0]
+                        if records_tmp[1] is not None:
+                            records[readid][scaffold][index2]=records_tmp[1]
+                        if records_tmp[0] is None:
+                            records[readid][scaffold].remove(record1)
+                        if records_tmp[1] is None:
+                            records[readid][scaffold].remove(record2)
+    return records
 
 def write_length_file(scaffolds, output_file):
     with open(output_file,"w") as output_handle:
@@ -62,12 +132,25 @@ def write_length_file(scaffolds, output_file):
             output_handle.write("{0} {1}\n".format(scaffold, scaffolds[scaffold]))
         output_handle.close()
 
-def write_final_file(records, output_file):
-    pass
+def strands_count(records):
+    strand_count=dict()
+    strand_count[1]=0
+    strand_count[2]=0
+    for scaffold in records:
+        for record in records[scaffold]:
+            strand_count[record.strand]+=1
+    return strand_count
 
-def main(sam_path, final_path, len_path, ident, minlen):
-    print("Min ident:{0}".format(ident))
-    print("Min len:{0}".format(minlen))
+def write_final_file(records, output_file):
+    with open(output_file,"w") as output_handle:
+        for readid in records:
+            strands=strands_count(records[readid])
+            for scaffold in records[readid]:
+                for record in records[readid][scaffold]:
+                    output_handle.write("{0} {1}\n".format(str(record),strands[record.strand]))
+        output_handle.close()
+
+def main(sam_path, final_path, len_path, minlen, ident):
     # check if file is exist
     if not os.path.exists(sam_path):
         print("Can't find samfile at: {0}".format(sam_path))
@@ -75,8 +158,11 @@ def main(sam_path, final_path, len_path, ident, minlen):
     # read samfile
     samfile=pysam.AlignmentFile(sam_path,"r")
     scaffolds=get_scaffolds_length(samfile)
-    filter_alignment(samfile, minlen, ident)
+    records=filter_alignment(samfile, minlen, ident)
     samfile.close()
+    records=ajust_records(records,scaffolds,75, minlen)
+    write_final_file(records, final_path)
+    print("done")
 if __name__=="__main__":
     if len(sys.argv)==1:
         print("python samprocess.py [-h] [-sam samfile] [-f final file] [-l len file] [-i identity] [-m minlen]")
@@ -88,4 +174,4 @@ if __name__=="__main__":
     parser.add_argument('-i', action="store", default=0.9, dest="ident",help='Identity')
     parser.add_argument('-m', action="store", dest="minlen",help='Min length')
     args = parser.parse_args()
-    main(args.input_file, args.final_file, args.len_file,float(args.ident),int(args.minlen))
+    main(args.input_file, args.final_file, args.len_file,int(args.minlen),float(args.ident))
