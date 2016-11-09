@@ -52,17 +52,30 @@ We have 3 case:
 Case 1: one read mapped one time to a scaffold, do nothing  
 Case 2: one read(1 or 2) mapped several time to a scaffold. Check if they are closer together, if two
 alignment is close (distance<read length), remove the shorter. Other wise, do nothing.  
-Example:  
+Example:
+
+```
 read_1:             -----------  
 read_1:                             --------------  
 scaffold_1: ----------------------------------------------------------  
 Concluse: They are close, remove the fisrt one.  
+```
 Case 3: read_1 and read_2 mapped to a scaffold, check if they are overlap. If they are overlap, ajust the position of read_2. Check read_2 mapped length after ajustment.  
+
+```
 Example:  
 read_1:             --------------  
 read_2:                      ---------------  
 scaffold_1: ----------------------------------------------------------  
-Concluse: Overlap  
+```
+Concluse: Overlap, need to ajust position of read_2. The read after ajustment:
+
+```
+Example:  
+read_1:             --------------  
+read_2:                           ----------  
+scaffold_1: ----------------------------------------------------------  
+```
 
 ## References
 
