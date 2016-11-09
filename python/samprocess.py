@@ -55,8 +55,8 @@ def filter_alignment(samfile, minlen, identity):
     records=dict()
     i=0 #count number of record
     lengths=0
-    # for record in samfile.fetch():
-    for record in samfile.head(100000):
+    for record in samfile.fetch():
+    # for record in samfile.head(100000):
         i+=1
         lengths+=record.infer_query_length()
         # remove if unmapped

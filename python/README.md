@@ -94,8 +94,8 @@ read_1:             --------------
 read_2:                      ---------------  
 scaffold_1: ----------------------------------------------------------  
 
-read_1.end - read_2.start >=0 and read_2.end - read_1.start >=0 and read_2.start> read_1.start
-read_2.start=read_1.end+1
+Condition: read_1.end - read_2.start >=0 and read_2.end - read_1.start >=0 and read_2.start> read_1.start
+Action: read_2.start=read_1.end+1
 
 before
 ERR011130.16675_1 scaffold_222 758 802
@@ -112,8 +112,8 @@ read_1:                       --------------
 read_2:             ---------------  
 scaffold_1: ----------------------------------------------------------  
 
-read_2.end - read_1.start >=0 and read_1.end - read_2.start >=0 and read_1.start>read_2.start
-read_2.end=read_1.start-1
+Condition: read_2.end - read_1.start >=0 and read_1.end - read_2.start >=0 and read_1.start>read_2.start
+Action: read_2.end=read_1.start-1
 
 before
 ERR011130.16498_1 scaffold_16 3928 3972
@@ -130,8 +130,8 @@ read_1:              --------------
 read_2:               -----------
 scaffold_1: ----------------------------------------------------------  
 
-read_2.start - read_1.start >= 0 and read_2.end - read_1.end <= 0
-remove read_2
+Condition: read_2.start - read_1.start >= 0 and read_2.end - read_1.end <= 0
+Action: remove read_2
 
 ERR011130.75314_1 scaffold_33 3848 3891
 ERR011130.75314_2 scaffold_33 3848 3890(**Will be remove**)
@@ -145,8 +145,8 @@ read_1:              ----------
 read_2:            --------------
 scaffold_1: ----------------------------------------------------------  
 
-read_1.start-read_2.start >= 0 and read_1.end - read_2.end <=0
-remove read_1
+Condition: read_1.start-read_2.start >= 0 and read_1.end - read_2.end <=0
+Action: remove read_1
 
 ERR011130.221256_1 scaffold_336 256 297(**will be remove**)
 ERR011130.221256_2 scaffold_336 256 299
