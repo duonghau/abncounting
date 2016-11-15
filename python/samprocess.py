@@ -1,4 +1,7 @@
 # _*_ coding:utf-8 _*_
+# somthing can be improve
+# 1. Memory limit manager
+# 2. Parallel computation
 from __future__ import division
 import sys
 import os
@@ -30,8 +33,9 @@ class AlignRecords(object):
         return True if (self.start < self.end) and (self.end-self.start>minlen) else False
     # qname_strand rname start end
     def __str__(self):
+        # print 1-base
         return "{0}_{1} {2} {3} {4}".format(self.qname, self.strand, self.rname,
-            self.start,self.end)
+            (self.start+1),(self.end+1))
 
 def get_scaffolds_length(samfile):
     scaffolds=dict()
@@ -56,7 +60,7 @@ def filter_alignment(samfile, minlen, identity):
     i=0 #count number of record
     lengths=0
     for record in samfile.fetch():
-    # for record in samfile.head(100000):
+    # for record in samfile.head(100):
         i+=1
         lengths+=record.infer_query_length()
         # remove if unmapped
@@ -107,9 +111,6 @@ def ajust_record(record1, record2, read_length, minlen):
             record2=None
         # record1 in record2
         elif (record1.start-record2.start)>=0 and (record1.end - record2.end)<=0:
-            print("before")
-            print(record1)
-            print(record2)
             record1=None
     # remove record if mapped length < minlen, start>end
     if record1 is not None:
@@ -186,6 +187,7 @@ def main(sam_path, final_path, len_path, minlen, ident):
     write_length_file(scaffolds, len_path)
     print("done")
 if __name__=="__main__":
+    # python python/samprocess.py -sam data/MH0015.sam -f data/MH0015.final -l data/MH0015.len -i 0.9 -m 35
     if len(sys.argv)==1:
         print("python samprocess.py [-h] [-sam samfile] [-f final file] [-l len file] [-i identity] [-m minlen]")
         quit()

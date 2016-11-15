@@ -1,0 +1,12 @@
+Parser cigar:
+http://bioinformatics.cvr.ac.uk/blog/java-cigar-parser-for-sam-format/
+
+Mapped length = M + D -I
+
+https://www.biostars.org/p/65216/
+https://github.com/pezmaster31/bamtools/blob/master/src/api/BamAlignment.cpp
+
+http://okko73313.blogspot.com/2012/04/using-regular-expressions-to-analyze.html
+
+todo
+end variable
