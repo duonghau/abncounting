@@ -43,7 +43,6 @@ make Clean
 
 ```
 ./Samprocess [-sam samfile] [-f final file] [-l len file] [-i identity] [-m minlen]
-
 ```
 
 ## Algorithm  

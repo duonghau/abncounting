@@ -144,6 +144,15 @@ int AlignmentRecord::getMLength(){
     }else{
         // user regular expression for calculate the mapped length
         int length=0;
+        // boost::regex expr{regex_string};
+        // string::const_iterator begin = cigar.begin();
+        // string::const_iterator end = cigar.end();
+        // boost::match_results<string::const_iterator> matchs;
+        // while (regex_search(begin, end, matchs, expr)) {
+        //     string match= string(matchs[1].first, matchs[2].second-1);
+        //     length+=atoi(match.c_str());
+        //     begin = matchs[0].second;
+        // }
         boost::regex expr{regex_string};
         string::const_iterator begin = cigar.begin();
         string::const_iterator end = cigar.end();
